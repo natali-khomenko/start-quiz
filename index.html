@@ -82,6 +82,10 @@ textarea{width:100%;min-height:150px;border-radius:16px;border:1.5px solid #6b4a
 .dark .btn{background:var(--peony);color:var(--espresso)}
 .dark .btn:hover{background:#f9d9e3}
 .dark .btn.ghost{background:transparent;color:#fff;border-color:#fff}
+.dark input[type=email],.dark input[type=text]{width:100%;border-radius:16px;border:1.5px solid #6b4a43;background:#4a322d;color:#fff;font:inherit;font-size:16px;padding:14px 16px;min-height:52px}
+.dark input::placeholder{color:#cfb3ba}
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:#e7cfd6;cursor:pointer}
+.consent input{flex:none;width:22px;height:22px;margin-top:1px;accent-color:#F4C9D6}
 .disc{font-size:13px;color:var(--mocha)}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -387,23 +391,32 @@ function result(){
       }else fallback();
     }catch(e){fallback()}
   });
-  var join;
-  if(WAITLIST_URL){
-    var href=WAITLIST_URL;
-    if(WAITLIST_RESULT_ENTRY){href+=(href.indexOf("?")<0?"?":"&")+"usp=pp_url&"+WAITLIST_RESULT_ENTRY+"="+encodeURIComponent(txt)}
-    join=el("a",{class:"btn",href:href,target:"_blank",rel:"noopener",text:"Долучитись до списку очікування"});
-  }else{
-    join=el("button",{class:"btn",type:"button",disabled:"",text:"Список очікування відкриється скоро"});
-  }
+  var FORM_ACTION="https://docs.google.com/forms/d/e/1FAIpQLScCzLqPE8Qt0rFZNNwSEpkUjORsA1rzr9FEyDPZ2I7ChSD21A/formResponse";
+  var E={email:"entry.302838651",name:"entry.304828872",result:"entry.1617883081",consent:"entry.949980825"};
+  var CONSENT_TEXT="Я погоджуюсь, що мені надішлють лист про запуск платформи, і дозволяю зберегти мої відповіді з квізу";
+  var emailI=el("input",{type:"email",id:"em",placeholder:"Твій email",autocomplete:"email","aria-label":"Email"});
+  var nameI=el("input",{type:"text",id:"nm",placeholder:"Імʼя (необовʼязково)",autocomplete:"given-name","aria-label":"Імʼя"});
+  var chk=el("input",{type:"checkbox",id:"cs"});
+  var chkL=el("label",{class:"consent","for":"cs"},[chk,el("span",{text:CONSENT_TEXT})]);
+  var joinBtn=el("button",{class:"btn",type:"button",text:"Долучитись до списку очікування"});
+  var fstatus=el("p",{class:"small",role:"status","aria-live":"polite"});
+  joinBtn.addEventListener("click",function(){
+    var em=emailI.value.trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){fstatus.textContent="Перевір email: схоже, у ньому помилка.";emailI.focus();return}
+    if(!chk.checked){fstatus.textContent="Постав галочку згоди, щоб ми могли надіслати лист.";return}
+    joinBtn.disabled=true;fstatus.textContent="Надсилаю…";
+    var body=new URLSearchParams();
+    body.append(E.email,em);body.append(E.name,nameI.value.trim());body.append(E.result,txt);body.append(E.consent,CONSENT_TEXT);
+    fetch(FORM_ACTION,{method:"POST",mode:"no-cors",body:body}).then(function(){
+      fstatus.textContent="Готово! Ти у списку очікування. Коли платформа буде готова, ми надішлемо лист на "+em+".";
+      joinBtn.textContent="Ти у списку";
+    },function(){joinBtn.disabled=false;fstatus.textContent="Не вдалося надіслати. Перевір інтернет і спробуй ще раз."});
+  });
   app.appendChild(el("div",{class:"dark"},[
     el("h3",{text:"Хочеш займатися цим всерйоз?"}),
-    el("p",{text:"Ми готуємо безкоштовну платформу, де цю професію можна вивчити з нуля. Долучайся до списку очікування: залишиш email, і коли платформа буде готова, ми надішлемо тобі лист."}),
-    join,
-    el("p",{class:"small",text:"Email потрібен лише для листа про запуск платформи. Разом з ним до списку потраплять і твої відповіді з квізу, щоб ми підібрали для тебе правильний старт."}),
-    el("p",{class:"small",text:"Або збережи свій результат собі:"}),
-    ta,
-    el("div",{class:"nav"},[copyBtn]),
-    status
+    el("p",{text:"Ми готуємо безкоштовну платформу, де цю професію можна вивчити з нуля. Залиш email у списку очікування, і коли платформа буде готова, ми надішлемо тобі лист."}),
+    emailI,nameI,chkL,joinBtn,fstatus,
+    el("p",{class:"small",text:"Email потрібен лише для листа про запуск платформи. Разом з ним ми збережемо твої відповіді з квізу, щоб підібрати для тебе правильний старт."})
   ]));
   app.appendChild(el("p",{class:"disc",text:"Це підказка напряму, а не гарантія роботи чи офера. Результат залежить від твоєї практики й портфоліо."}));
   app.appendChild(el("div",{class:"nav"},[el("button",{class:"btn ghost",type:"button",on:{click:function(){step=Q.length-1;render()}},text:"Змінити відповіді"}),
