@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ким працювати онлайн</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700;1,800&display=swap">
+<style>
+/* Layout: one centred column, one question per screen, Peony wash behind white cards.
+   Palette is the brandbook: Espresso text, Peony fills, White ground, Mocha for captions.
+   Single committed look (the brandbook has no dark theme), every colour set explicitly. */
+:root{
+  --bg:#FFFFFF; --wash:#FBE8EE; --peony:#F4C9D6; --espresso:#3E2723; --mocha:#7A5C55; --line:#EBD3DB;
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--espresso); font-family:var(--sans); font-size:17px; line-height:1.5;
+  padding-block:28px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  min-height:100vh;
+}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.pill{display:inline-block;align-self:flex-start;background:var(--peony);color:var(--espresso);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;border-radius:999px}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.12;margin:0;text-wrap:balance}
+h1{font-size:clamp(38px,9vw,56px)}
+h2{font-size:clamp(28px,6.4vw,38px)}
+h3{font-size:24px}
+em{font-style:italic;font-weight:800}
+p{margin:0}
+.lead{color:var(--mocha);font-size:18px}
+.small{font-size:14px;color:var(--mocha)}
+button,a.btn{font:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--espresso);color:#fff;border:0;border-radius:999px;padding:15px 28px;font-weight:800;font-size:16px;text-decoration:none;min-height:52px}
+.btn:hover{background:#51342e}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--espresso);border:1.5px solid var(--espresso)}
+.btn.ghost:hover{background:var(--wash)}
+:focus-visible{outline:3px solid var(--espresso);outline-offset:3px}
+
+/* progress */
+.progress{display:flex;flex-direction:column;gap:8px}
+.bar{height:6px;border-radius:99px;background:var(--wash);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--espresso);border-radius:99px;transition:width .35s ease}
+.meta{display:flex;justify-content:space-between;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mocha)}
+
+/* options */
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;background:#fff;color:var(--espresso);border:1.5px solid var(--line);border-radius:20px;padding:15px 18px;font-weight:700;transition:background .15s,border-color .15s}
+.opt:hover{background:var(--wash)}
+.opt .mark{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--mocha);display:grid;place-items:center}
+.opt.multi .mark{border-radius:7px}
+.opt[aria-pressed="true"]{background:var(--espresso);color:#fff;border-color:var(--espresso)}
+.opt[aria-pressed="true"] .mark{border-color:var(--peony);background:var(--peony)}
+.opt[aria-pressed="true"] .mark::after{content:"";width:9px;height:5px;border-left:2.5px solid var(--espresso);border-bottom:2.5px solid var(--espresso);transform:rotate(-45deg) translate(1px,-1px)}
+.hint{font-size:14px;color:var(--mocha)}
+.nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* result */
+.hero{background:var(--wash);border-radius:32px;padding:28px 24px;display:flex;flex-direction:column;gap:12px}
+.rank{font-family:var(--serif);font-style:italic;font-weight:800;font-size:15px;color:var(--mocha)}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:26px;padding:22px 20px;display:flex;flex-direction:column;gap:14px}
+.card.second{background:#fff}
+.strength{display:inline-flex;gap:5px;align-items:center;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mocha)}
+.dots{display:inline-flex;gap:4px}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--peony)}
+.dots i.on{background:var(--espresso)}
+ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+ul.have{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+ul.have li{background:var(--wash);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:700}
+.note{background:var(--wash);border-radius:20px;padding:16px 18px;font-size:15px}
+.dark{background:var(--espresso);color:#fff;border-radius:28px;padding:26px 22px;display:flex;flex-direction:column;gap:14px}
+.dark h3{color:var(--peony)}
+.dark .small{color:#e7cfd6}
+textarea{width:100%;min-height:150px;border-radius:16px;border:1.5px solid #6b4a43;background:#4a322d;color:#fff;font:inherit;font-size:14px;line-height:1.45;padding:14px;resize:vertical}
+.dark .btn{background:var(--peony);color:var(--espresso)}
+.dark .btn:hover{background:#f9d9e3}
+.dark .btn.ghost{background:transparent;color:#fff;border-color:#fff}
+.disc{font-size:13px;color:var(--mocha)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app"></div>
+
+<script>
+(function(){
+"use strict";
+/* Посилання на форму списку очікування (Google Forms чи Tally). Поки порожнє, кнопка вимкнена.
+   WAITLIST_RESULT_ENTRY: поле форми для результату квізу, наприклад "entry.123456789". */
+var WAITLIST_URL="https://docs.google.com/forms/d/e/1FAIpQLScCzLqPE8Qt0rFZNNwSEpkUjORsA1rzr9FEyDPZ2I7ChSD21A/viewform";
+var WAITLIST_RESULT_ENTRY="entry.1617883081";
+
+/* ---------- roles ---------- */
+var ROLES={
+ creator:{name:"Креатор / UGC-відеомейкер",
+  what:"Придумує й знімає відео для реклами та соцмереж: короткі ролики, які люди дивляться до кінця.",
+  steps:["Зніми 3 короткі ролики на телефон за одним сценарієм: хук, суть, заклик до дії.","Збери портфоліо з 5–7 робіт. Навчальні теж підходять, головне щоб вони були завершені.","Розберися, чому одну рекламу дивляться, а іншу гортають: усе вирішують перші 3 секунди."]},
+ editor:{name:"Відеомонтажер і візуальний дизайнер",
+  what:"Збирає з матеріалу готовий креатив: монтаж, субтитри, картинки, різні версії одного ролика.",
+  steps:["Освой CapCut або Premiere: змонтуй один ролик із готового матеріалу.","Зроби 3 версії одного креативу з різними першими секундами та субтитрами.","Збери портфоліо «до / після», 5–7 робіт."]},
+ copy:{name:"Копірайтер / сценарист",
+  what:"Пише тексти, хуки й сценарії, які чіпляють з першого рядка. Основа майже будь-якої реклами.",
+  steps:["Напиши 10 хуків для однієї реклами й вибери 3 найсильніші.","Перепиши чужий слабкий текст так, щоб він чіпляв за 3 секунди.","Збери 5 коротких текстів у портфоліо."]},
+ buyer:{name:"Медіабаєр / performance-маркетолог",
+  what:"Запускає рекламу, читає цифри й вирішує, що масштабувати, а що вимкнути.",
+  steps:["Розберися з воронкою: показ → клік → заявка → оплата. Що де відсіюється.","Навчись читати базові метрики (CTR, CPL, ROI) на прикладі чужих звітів.","Запусти тестову кампанію з мікробюджетом, краще з наставником."]},
+ smm:{name:"SMM і комʼюніті-менеджер",
+  what:"Веде соцмережі, відповідає людям, збирає навколо проєкту спільноту.",
+  steps:["Обери одну нішу й два тижні веди для неї тестовий акаунт.","Навчись відповідати в коментарях і директі так, щоб людина хотіла залишитися.","Збери кейс: що ти опублікувала і що це дало."]},
+ pm:{name:"Проджект-менеджер креативної команди",
+  what:"Тримає процес: задачі, дедлайни, комунікація між креаторами, баєрами й клієнтом.",
+  steps:["Освой ClickUp або Notion: збери там дошку для тестового проєкту.","Навчись ставити задачу так, щоб виконавцю не треба було перепитувати.","Потренуй робочу англійську: статуси, апдейти, короткі звіти."]},
+ ai:{name:"AI-оператор / асистент",
+  what:"Працює з AI-інструментами: тексти, переклади, картинки, автоматизація рутини для команди.",
+  steps:["Щодня віддавай AI одну реальну задачу: текст, переклад чи картинку.","Навчись писати чіткі запити й перевіряти результат, не довіряючи йому наосліп.","Збери 3 шаблони: що саме ти автоматизувала і скільки часу це економить."]}
+};
+var ROLE_IDS=Object.keys(ROLES);
+
+/* ---------- questions ---------- */
+/* kind: single | multi ; w = weights per role ; tag = unscored profile answer ; none = exclusive option */
+var Q=[
+ {id:"situation",block:"Про тебе",kind:"single",t:"Де ти зараз?",opts:[
+  {id:"office",l:"Працюю в офісі, але хочу онлайн"},
+  {id:"mom",l:"Я в декреті або з дитиною вдома"},
+  {id:"abroad",l:"Живу за кордоном і шукаю нормальну професію"},
+  {id:"uni",l:"Навчаюсь в університеті"},
+  {id:"grad",l:"Закінчила університет, але не працюю за спеціальністю"},
+  {id:"search",l:"Шукаю роботу й не знаю, з чого почати"},
+  {id:"biz",l:"Маю свою справу чи фріланс і хочу стабільності"}]},
+ {id:"exp",block:"Про тебе",kind:"single",t:"Скільки загалом ти працювала, у будь-якій сфері?",opts:[
+  {id:"0",l:"Ще не працювала"},{id:"1",l:"До року"},{id:"2",l:"1–3 роки"},{id:"3",l:"Понад 3 роки"}]},
+ {id:"spheres",block:"Про тебе",kind:"multi",t:"Де в тебе вже був досвід?",hint:"Познач усе, що підходить.",opts:[
+  {id:"sales",l:"Продажі, сервіс, ресторани, готелі",w:{smm:1,pm:1}},
+  {id:"edu",l:"Освіта, репетиторство",w:{copy:1,pm:1}},
+  {id:"art",l:"Творчість: кіно, театр, фото, музика, дизайн",w:{creator:2,editor:1}},
+  {id:"admin",l:"Офіс, документи, адміністрування, бухгалтерія",w:{pm:2,buyer:1}},
+  {id:"it",l:"IT чи технічна робота",w:{ai:2,buyer:1}},
+  {id:"mkt",l:"Маркетинг або реклама",w:{buyer:2,smm:1,copy:1}},
+  {id:"other",l:"Медицина, право, інше",w:{pm:1}},
+  {id:"none",l:"Нічого з цього",none:true}]},
+ {id:"eng",block:"Про тебе",kind:"single",t:"Яка в тебе англійська?",opts:[
+  {id:"none",l:"Майже ніякої",w:{pm:-1,buyer:-1}},
+  {id:"basic",l:"Базова: розумію, коли повільно",w:{pm:-1}},
+  {id:"work",l:"Робоча: читаю, пишу, можу спілкуватись"},
+  {id:"fluent",l:"Вільна",w:{pm:1,buyer:1}}]},
+ {id:"time",block:"Про тебе",kind:"single",t:"Скільки годин на тиждень ти можеш вчитись і практикуватись?",opts:[
+  {id:"low",l:"До 10 годин"},{id:"mid",l:"10–20 годин"},{id:"high",l:"20–30 годин"},{id:"full",l:"Можу повний день"}]},
+ {id:"easy",block:"Що тобі підходить",kind:"multi",max:2,t:"Що в тебе виходить найлегше?",hint:"Вибери до двох.",opts:[
+  {id:"story",l:"Вигадувати історії й підбирати слова",w:{copy:2,creator:1}},
+  {id:"visual",l:"Бачити красиве: кадр, колір, композицію",w:{creator:2,editor:2}},
+  {id:"num",l:"Розбиратися в цифрах і знаходити закономірності",w:{buyer:3}},
+  {id:"people",l:"Знаходити спільну мову з людьми",w:{smm:3,pm:1}},
+  {id:"org",l:"Організовувати: щоб усе було вчасно й на місці",w:{pm:3}},
+  {id:"tech",l:"Розбиратися з програмами та інструментами",w:{ai:3,editor:1}}]},
+ {id:"day",block:"Що тобі підходить",kind:"single",t:"Який робочий день тобі найближчий?",opts:[
+  {id:"a",l:"Знімаю, пробую, переробляю, поки не вийде",w:{creator:3,editor:1}},
+  {id:"b",l:"Сиджу в таблицях і шукаю, що працює, а що ні",w:{buyer:3}},
+  {id:"c",l:"Пишу тексти та сценарії",w:{copy:3}},
+  {id:"d",l:"Відповідаю людям і веду спільноту",w:{smm:3}},
+  {id:"e",l:"Координую команду й слідкую за дедлайнами",w:{pm:3}},
+  {id:"f",l:"Налаштовую інструменти й передаю рутину AI",w:{ai:3}},
+  {id:"g",l:"Складаю картинку, монтаж, макет",w:{editor:3,creator:1}}]},
+ {id:"friend",block:"Що тобі підходить",kind:"single",t:"Подруга просить допомогти з рекламою її бізнесу. Що ти зробиш першим?",opts:[
+  {id:"a",l:"Придумаю, що саме скажу й кому",w:{copy:2,buyer:1}},
+  {id:"b",l:"Зніму короткий ролик на телефон",w:{creator:3}},
+  {id:"c",l:"Подивлюсь, що працює в конкурентів, і порахую",w:{buyer:3}},
+  {id:"d",l:"Складу план: хто, що й до коли",w:{pm:3}},
+  {id:"e",l:"Запитаю в AI й подивлюсь, що вийде",w:{ai:3}},
+  {id:"f",l:"Зроблю гарну картинку чи макет",w:{editor:3}}]},
+ {id:"fear",block:"Що тобі підходить",kind:"single",t:"Що тебе лякає найбільше?",opts:[
+  {id:"cam",l:"Камера",w:{creator:-2,smm:-1}},
+  {id:"num",l:"Цифри й таблиці",w:{buyer:-3}},
+  {id:"write",l:"Писати тексти",w:{copy:-3}},
+  {id:"talk",l:"Спілкуватися з незнайомими",w:{smm:-3,pm:-1}},
+  {id:"many",l:"Багато задач одночасно",w:{pm:-3}},
+  {id:"tech",l:"Нові технології",w:{ai:-3,editor:-1}},
+  {id:"nothing",l:"Нічого з цього",w:{creator:1,smm:1}}]},
+ {id:"skills",block:"Що ти вже вмієш",kind:"multi",t:"Що ти вже вмієш робити?",hint:"Навіть на базовому рівні. Познач усе, що підходить.",opts:[
+  {id:"edit",l:"Монтую відео (CapCut, Premiere та інше)",w:{editor:3,creator:1}},
+  {id:"design",l:"Роблю картинки в Canva чи Figma",w:{editor:2}},
+  {id:"sheets",l:"Працюю з Excel чи Google Sheets",w:{buyer:2,pm:1}},
+  {id:"ai",l:"Щодня користуюсь ChatGPT чи іншим AI",w:{ai:3}},
+  {id:"smm",l:"Вела соцмережі",w:{smm:3}},
+  {id:"write",l:"Писала тексти чи пости",w:{copy:3}},
+  {id:"shoot",l:"Знімала відео на телефон",w:{creator:3}},
+  {id:"pm",l:"Користувалась ClickUp, Notion чи Trello",w:{pm:3}},
+  {id:"ads",l:"Запускала рекламу в Meta чи Google",w:{buyer:4}},
+  {id:"none",l:"Поки нічого з цього",none:true}]},
+ {id:"goal",block:"Що тобі підходить",kind:"single",t:"Що для тебе зараз найважливіше?",opts:[
+  {id:"money",l:"Стабільний дохід"},{id:"free",l:"Гнучкий графік і свобода"},
+  {id:"create",l:"Творчість"},{id:"grow",l:"Кар’єрне зростання"},{id:"travel",l:"Можливість жити й подорожувати де хочу"}]}
+];
+
+/* ---------- state ---------- */
+var app=document.getElementById("app");
+var step=-1;            // -1 intro, 0..Q.length-1 questions, Q.length result
+var A={};               // answers: id -> string | string[]
+
+function qById(id){for(var i=0;i<Q.length;i++)if(Q[i].id===id)return Q[i]}
+function optLabel(q,id){for(var i=0;i<q.opts.length;i++)if(q.opts[i].id===id)return q.opts[i].l;return id}
+function el(tag,attrs,kids){
+  var e=document.createElement(tag);
+  if(attrs)for(var k in attrs){
+    if(k==="text")e.textContent=attrs[k];
+    else if(k==="on")for(var ev in attrs.on)e.addEventListener(ev,attrs.on[ev]);
+    else e.setAttribute(k,attrs[k]);
+  }
+  (kids||[]).forEach(function(c){if(c)e.appendChild(typeof c==="string"?document.createTextNode(c):c)});
+  return e;
+}
+function render(){
+  app.textContent="";
+  if(step<0)return intro();
+  if(step>=Q.length)return result();
+  question();
+  window.scrollTo(0,0);
+}
+
+/* ---------- screens ---------- */
+function intro(){
+  app.appendChild(el("span",{class:"pill",text:"Квіз · 3 хвилини"}));
+  var h=el("h1",{},[ "Ким ти можеш працювати ",el("em",{text:"онлайн"}),"?"]);
+  app.appendChild(h);
+  app.appendChild(el("p",{class:"lead",text:"11 простих питань про тебе, твої навички й досвід. Наприкінці отримаєш 2 ролі, які тобі найближчі, і короткий план першого кроку. Досвід у маркетингу не потрібен."}));
+  app.appendChild(el("div",{class:"note",text:"Правильних відповідей немає. Відповідай так, як є зараз, навіть якщо в тебе ще нічого не було."}));
+  app.appendChild(el("div",{class:"nav"},[el("button",{class:"btn",type:"button",on:{click:function(){step=0;render()}},text:"Почати"})]));
+}
+function question(){
+  var q=Q[step],pct=Math.round(step/Q.length*100);
+  var bar=el("div",{class:"bar",role:"progressbar","aria-valuemin":"0","aria-valuemax":"100","aria-valuenow":String(pct)},[el("i",{style:"width:"+pct+"%"})]);
+  app.appendChild(el("div",{class:"progress"},[
+    el("div",{class:"meta"},[el("span",{text:q.block}),el("span",{text:(step+1)+" / "+Q.length})]),bar]));
+  app.appendChild(el("h2",{text:q.t}));
+  if(q.hint)app.appendChild(el("p",{class:"hint",text:q.hint}));
+  var cur=A[q.id]||(q.kind==="multi"?[]:null);
+  var box=el("div",{class:"opts",role:"group","aria-label":q.t});
+  var next;
+  function sync(){
+    var ok=q.kind==="multi"?cur.length>0:!!cur;
+    next.disabled=!ok;
+    Array.prototype.forEach.call(box.children,function(b){
+      var id=b.getAttribute("data-id");
+      b.setAttribute("aria-pressed",String(q.kind==="multi"?cur.indexOf(id)>=0:cur===id));
+    });
+  }
+  q.opts.forEach(function(o){
+    var b=el("button",{type:"button",class:"opt"+(q.kind==="multi"?" multi":""),"data-id":o.id,"aria-pressed":"false",on:{click:function(){
+      if(q.kind==="single"){cur=o.id;A[q.id]=cur;sync();return}
+      var i=cur.indexOf(o.id);
+      if(i>=0)cur.splice(i,1);
+      else{
+        if(o.none)cur=[o.id];
+        else{
+          cur=cur.filter(function(x){var oo=q.opts.filter(function(p){return p.id===x})[0];return !(oo&&oo.none)});
+          if(q.max&&cur.length>=q.max)cur.shift();
+          cur.push(o.id);
+        }
+      }
+      A[q.id]=cur;sync();
+    }}},[el("span",{class:"mark","aria-hidden":"true"}),el("span",{text:o.l})]);
+    box.appendChild(b);
+  });
+  app.appendChild(box);
+  next=el("button",{class:"btn",type:"button",disabled:"",on:{click:function(){step++;render()}},text:step===Q.length-1?"Показати результат":"Далі"});
+  var back=el("button",{class:"btn ghost",type:"button",on:{click:function(){step--;render()}},text:"Назад"});
+  app.appendChild(el("div",{class:"nav"},[step>0?back:null,next]));
+  sync();
+}
+
+/* ---------- scoring ---------- */
+function score(){
+  var s={};ROLE_IDS.forEach(function(r){s[r]=0});
+  Q.forEach(function(q){
+    var a=A[q.id];if(a==null)return;
+    var ids=Array.isArray(a)?a:[a];
+    ids.forEach(function(id){
+      q.opts.forEach(function(o){if(o.id===id&&o.w)for(var r in o.w)s[r]+=o.w[r]});
+    });
+  });
+  /* years of work give a small push to roles that depend on process and numbers */
+  var e=A.exp;
+  if(e==="2"||e==="3"){s.pm+=1;s.buyer+=1}
+  if(e==="3"){s.pm+=1}
+  return s;
+}
+function ranked(){
+  var s=score();
+  return ROLE_IDS.map(function(r){return{id:r,v:s[r]}}).sort(function(a,b){return b.v-a.v});
+}
+function level(v,top){
+  if(top<=0)return 2;
+  var r=v/top; return r>=0.85?3:r>=0.6?2:1;
+}
+
+/* ---------- derived text ---------- */
+var HAVE_MAP={
+ spheres:{sales:"досвід у продажах і сервісі",edu:"досвід в освіті",art:"творчий бекграунд",admin:"офісний досвід",it:"технічний бекграунд",mkt:"досвід у маркетингу",other:"досвід з іншої сфери"},
+ skills:{edit:"монтаж відео",design:"візуальні інструменти",sheets:"таблиці",ai:"щоденна робота з AI",smm:"ведення соцмереж",write:"письмо",shoot:"зйомка на телефон",pm:"таск-менеджери",ads:"запуск реклами"}
+};
+function haveList(){
+  var out=[];
+  ["spheres","skills"].forEach(function(k){
+    (A[k]||[]).forEach(function(id){if(HAVE_MAP[k][id])out.push(HAVE_MAP[k][id])});
+  });
+  return out;
+}
+function notes(){
+  var n=[];
+  var s=A.situation,e=A.exp,en=A.eng,t=A.time;
+  if(e==="0"||e==="1")n.push("Портфоліо з реальних робіт важить більше за стаж. Почати можна без досвіду.");
+  if(s==="uni"||s==="grad")n.push("Університет тут не заважає: навчальні й тестові проєкти теж потрапляють у портфоліо.");
+  if(s==="mom")n.push("У цій професії рахується результат, а не години в офісі. Графік можна збудувати під себе.");
+  if(s==="office")n.push("Твій офісний досвід нікуди не зникає: він стане частиною твоєї нової професії.");
+  if(s==="abroad")n.push("Компанії шукають навички, а англійська підтягується в процесі роботи.");
+  if(s==="biz")n.push("Твій власний досвід із клієнтами й грошима дає перевагу: ти розумієш, навіщо бізнесу реклама.");
+  if(en==="none"||en==="basic")n.push("Для старту вистачить робочої англійської, а з рештою допомагає AI. На міжнародних проєктах її варто підтягувати паралельно.");
+  if(t==="low")n.push("10 годин на тиждень достатньо, щоб почати, але портфоліо збиратиметься повільніше. Це нормально.");
+  if(t==="high"||t==="full")n.push("З таким часом ти можеш зібрати перші роботи за кілька тижнів.");
+  return n.slice(0,4);
+}
+function summaryText(r){
+  var lines=[];
+  lines.push("Квіз «Ким працювати онлайн»");
+  lines.push("Мої ролі: 1) "+ROLES[r[0].id].name+"; 2) "+ROLES[r[1].id].name);
+  var get=function(id){var q=qById(id),a=A[id];if(a==null)return"—";return(Array.isArray(a)?a:[a]).map(function(x){return optLabel(q,x)}).join(", ")};
+  lines.push("Ситуація: "+get("situation"));
+  lines.push("Досвід: "+get("exp")+"; сфери: "+get("spheres"));
+  lines.push("Англійська: "+get("eng"));
+  lines.push("Час на тиждень: "+get("time"));
+  lines.push("Вмію: "+get("skills"));
+  lines.push("Найважливіше зараз: "+get("goal"));
+  return lines.join("\n");
+}
+
+/* ---------- result ---------- */
+function roleCard(r,idx,top){
+  var role=ROLES[r.id],lv=level(r.v,top);
+  var dots=el("span",{class:"dots","aria-hidden":"true"},[0,1,2].map(function(i){return el("i",{class:i<lv?"on":""})}));
+  var kids=[
+    el("div",{class:"strength"},[dots,el("span",{text:lv===3?"Дуже підходить":lv===2?"Підходить":"Можливий напрям"})]),
+    el("h3",{text:role.name}),
+    el("p",{text:role.what}),
+    el("p",{class:"small",text:"З чого почати"}),
+    el("ol",{class:"steps"},role.steps.map(function(s){return el("li",{text:s})}))
+  ];
+  return el("div",{class:"card"},kids);
+}
+function result(){
+  var r=ranked(),top=r[0].v;
+  var hero=el("div",{class:"hero"},[
+    el("span",{class:"pill",text:"Твій результат"}),
+    el("h2",{},["Тобі найближче: ",el("em",{text:ROLES[r[0].id].name})]),
+    el("p",{class:"lead",text:"Другий напрям: "+ROLES[r[1].id].name+"."})
+  ]);
+  app.appendChild(hero);
+  app.appendChild(roleCard(r[0],0,top));
+  app.appendChild(roleCard(r[1],1,top));
+  var have=haveList();
+  if(have.length){
+    app.appendChild(el("div",{class:"card"},[
+      el("h3",{text:"Що в тебе вже є"}),
+      el("ul",{class:"have"},have.map(function(h){return el("li",{text:h})}))]));
+  }
+  var ns=notes();
+  if(ns.length){
+    app.appendChild(el("div",{class:"card"},[el("h3",{text:"Для тебе"})].concat(ns.map(function(n){return el("p",{class:"note",text:n})}))));
+  }
+  var txt=summaryText(r);
+  var ta=el("textarea",{id:"summary",readonly:"","aria-label":"Твій результат для Наталі"});
+  ta.value=txt;
+  var copyBtn=el("button",{class:"btn",type:"button",text:"Скопіювати результат"});
+  var status=el("p",{class:"small",role:"status","aria-live":"polite"});
+  copyBtn.addEventListener("click",function(){
+    function fallback(){ta.focus();ta.select();status.textContent="Виділила текст, скопіюй його вручну (Ctrl+C або Cmd+C)."}
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(ta.value).then(function(){status.textContent="Скопійовано. Тепер встав його в повідомлення."},fallback);
+      }else fallback();
+    }catch(e){fallback()}
+  });
+  var join;
+  if(WAITLIST_URL){
+    var href=WAITLIST_URL;
+    if(WAITLIST_RESULT_ENTRY){href+=(href.indexOf("?")<0?"?":"&")+"usp=pp_url&"+WAITLIST_RESULT_ENTRY+"="+encodeURIComponent(txt)}
+    join=el("a",{class:"btn",href:href,target:"_blank",rel:"noopener",text:"Долучитись до списку очікування"});
+  }else{
+    join=el("button",{class:"btn",type:"button",disabled:"",text:"Список очікування відкриється скоро"});
+  }
+  app.appendChild(el("div",{class:"dark"},[
+    el("h3",{text:"Хочеш займатися цим всерйоз?"}),
+    el("p",{text:"Ми готуємо безкоштовну платформу, де цю професію можна вивчити з нуля. Долучайся до списку очікування: залишиш email, і коли платформа буде готова, ми надішлемо тобі лист."}),
+    join,
+    el("p",{class:"small",text:"Email потрібен лише для листа про запуск платформи. Разом з ним до списку потраплять і твої відповіді з квізу, щоб ми підібрали для тебе правильний старт."}),
+    el("p",{class:"small",text:"Або збережи свій результат собі:"}),
+    ta,
+    el("div",{class:"nav"},[copyBtn]),
+    status
+  ]));
+  app.appendChild(el("p",{class:"disc",text:"Це підказка напряму, а не гарантія роботи чи офера. Результат залежить від твоєї практики й портфоліо."}));
+  app.appendChild(el("div",{class:"nav"},[el("button",{class:"btn ghost",type:"button",on:{click:function(){step=Q.length-1;render()}},text:"Змінити відповіді"}),
+    el("button",{class:"btn ghost",type:"button",on:{click:function(){A={};step=-1;render()}},text:"Пройти ще раз"})]));
+  window.scrollTo(0,0);
+}
+render();
+})();
+</script>
+
+</body>
+</html>
