@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Паперовий колаж-рілс з Claude</title>
+<style>
+:root{--wash:#FBE8EE;--espresso:#3E2723;--mocha:#7A5C55;--card:#fff;color-scheme:light}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--wash);color:var(--espresso);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.55;padding:28px max(16px,env(safe-area-inset-left,0px)) 56px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:Georgia,serif;font-size:30px;line-height:1.15;margin:0}
+h2{font-family:Georgia,serif;font-size:21px;margin:0 0 8px}
+p{margin:0;color:var(--mocha)}
+ul,ol{margin:0;padding-left:20px;color:var(--mocha)}
+li{margin:4px 0}
+.card{background:var(--card);border-radius:16px;padding:18px}
+.btn{display:block;text-align:center;background:var(--espresso);color:#fff;text-decoration:none;font-weight:700;padding:16px;border-radius:14px}
+.btn.ghost{background:#fff;color:var(--espresso);border:2px solid var(--espresso)}
+.cmd{display:flex;gap:8px;align-items:stretch;margin:8px 0}
+.cmd code{flex:1;background:#F6EEF0;color:var(--espresso);border-radius:10px;padding:10px 12px;font-size:15px;word-break:break-word}
+.cmd button{border:0;background:var(--espresso);color:#fff;border-radius:10px;padding:0 14px;font-weight:700;cursor:pointer}
+.small{font-size:14px}
+.note{background:#fff7;border:1px dashed var(--mocha);border-radius:12px;padding:12px;color:var(--mocha)}
+</style></head><body><div class="wrap">
+<h1>Паперовий колаж-рілс з Claude</h1>
+<p>Скіл для Claude Code. Він допомагає зробити вертикальне відео у стилі паперового колажу з <b>твоєю</b> історією, <b>твоїм</b> голосом і <b>твоїми</b> фото. Вирізання й збірка відео відбуваються на твоєму комп'ютері.</p>
+<a class="btn" href="paper-collage-reel.zip" download>Завантажити скіл (zip, 1 МБ)</a>
+
+<div class="card"><h2>Що потрібно</h2>
+<ul>
+<li>Claude Code на комп'ютері і платна підписка Claude.</li>
+<li>ffmpeg: Claude підкаже, як його поставити.</li>
+<li>macOS автор перевірила, Windows ще не перевірено.</li>
+<li>Ти приносиш сама: сценарій (або пишете разом із Claude), свій голос і свої фото. У скілі нема готових стікерів, фото чи голосу.</li>
+</ul></div>
+
+<div class="card"><h2>Як почати</h2>
+<ol>
+<li>Розпакуй zip. Папку <b>paper-collage-reel</b> поклади в <b>~/.claude/skills/</b> (на Windows: <b>%USERPROFILE%\.claude\skills\</b>).</li>
+<li>Відкрий Claude Code і напиши:
+<div class="cmd"><code id="c1">налаштуй paper-collage-reel</code><button type="button" data-copy="c1">Копіювати</button></div></li>
+<li>Коли побачиш <b>SMOKE TEST OK</b>, скіл готовий. Далі напиши:
+<div class="cmd"><code id="c2">зроби мені collage reel</code><button type="button" data-copy="c2">Копіювати</button></div></li>
+<li>Claude ставитиме питання по черзі: про що рілс, голос, фото. Ти затверджуєш чотири етапи: розкладку, вирізки, рух і готове відео.</li>
+</ol>
+<p class="small" style="margin-top:10px">Перший раз моделі завантажуються самі (вирізання фону, розпізнавання мови), це одноразово. Детальніше в файлі <b>README-UA.md</b> усередині архіву.</p></div>
+
+<div class="card"><h2>Чесно про межі</h2>
+<ul>
+<li>Губи не синхронізуються з голосом.</li>
+<li>Край волосся при вирізанні може бути неідеальним, тому ти затверджуєш вирізки.</li>
+<li>Тільки вертикальне 9:16.</li>
+<li>Скіл не пише сценарій за тебе: його пишеш ти або разом із Claude.</li>
+</ul></div>
+
+<div class="card"><h2>А що далі?</h2>
+<p>Монтаж це лише одна з ролей у маркетингу. Роботодавці шукають маркетинг, відео й AI разом. Хочеш зрозуміти, з чого почати саме тобі? Тест займає 3 хвилини.</p>
+<p style="height:12px"></p>
+<a class="btn ghost" href="https://natali-khomenko.github.io/start-quiz/?src=skil-page">Пройти тест: ким тобі бути онлайн</a></div>
+
+<p class="small">Це подарунок: використовуй його для себе й для свого бренду.</p>
+</div>
+<script>
+document.querySelectorAll('button[data-copy]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=document.getElementById(b.getAttribute('data-copy')).textContent;
+    function done(){b.textContent='Скопійовано';setTimeout(function(){b.textContent='Копіювати'},1500)}
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){})}}catch(e){}
+  });
+});
+</script>
+</body></html>
