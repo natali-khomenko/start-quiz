@@ -331,9 +331,11 @@ function notes(){
   if(t==="high"||t==="full")n.push("З таким часом ти можеш зібрати перші роботи за кілька тижнів.");
   return n.slice(0,4);
 }
+var SRC=(function(){try{var m=/[?&]src=([^&#]*)/.exec(location.search);return m?decodeURIComponent(m[1]).replace(/[^A-Za-z0-9_\-]/g,"").slice(0,40):""}catch(e){return""}})();
 function summaryText(r){
   var lines=[];
   lines.push("Квіз «Ким працювати онлайн»");
+  lines.push("Джерело: "+(SRC||"—"));
   lines.push("Мої ролі: 1) "+ROLES[r[0].id].name+"; 2) "+ROLES[r[1].id].name);
   var get=function(id){var q=qById(id),a=A[id];if(a==null)return"—";return(Array.isArray(a)?a:[a]).map(function(x){return optLabel(q,x)}).join(", ")};
   lines.push("Ситуація: "+get("situation"));
