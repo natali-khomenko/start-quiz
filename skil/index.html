@@ -24,6 +24,8 @@ li{margin:4px 0}
 <h1>Паперовий колаж-рілс з Claude</h1>
 <p>Скіл для Claude Code. Він допомагає зробити вертикальне відео у стилі паперового колажу з <b>твоєю</b> історією, <b>твоїм</b> голосом і <b>твоїми</b> фото. Вирізання й збірка відео відбуваються на твоєму комп'ютері.</p>
 <a class="btn" href="paper-collage-reel.zip" download>Завантажити скіл (zip, 1 МБ)</a>
+<div class="note" id="mobile-note" style="display:none"><b>Ти з телефона?</b> Скіл ставиться на комп'ютер. Скопіюй посилання, відкрий його на комп'ютері й завантаж там. У Instagram завантаження зазвичай не працює: натисни ⋯ і «Відкрити в браузері».
+<div class="cmd"><code id="c3"></code><button type="button" data-copy="c3">Копіювати</button></div></div>
 
 <div class="card"><h2>Що потрібно</h2>
 <ul>
@@ -59,5 +61,12 @@ document.querySelectorAll('button[data-copy]').forEach(function(b){
     try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){})}}catch(e){}
   });
 });
+(function(){
+  var ua=navigator.userAgent||'';
+  if(/Android|iPhone|iPad|iPod|Instagram|FBAN|FBAV/i.test(ua)){
+    document.getElementById('c3').textContent=location.href.split('#')[0];
+    document.getElementById('mobile-note').style.display='block';
+  }
+})();
 </script>
 </body></html>
