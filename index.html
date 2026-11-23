@@ -393,7 +393,7 @@ function result(){
   });
   var FORM_ACTION="https://docs.google.com/forms/d/e/1FAIpQLScCzLqPE8Qt0rFZNNwSEpkUjORsA1rzr9FEyDPZ2I7ChSD21A/formResponse";
   var E={email:"entry.302838651",name:"entry.304828872",result:"entry.1617883081",consent:"entry.949980825"};
-  var CONSENT_TEXT="Я погоджуюсь, що мені надішлють лист про запуск платформи, і дозволяю зберегти мої відповіді з квізу";
+  var CONSENT_TEXT="Я погоджуюсь, що мені напишуть про запуск курсу, і дозволяю зберегти мої відповіді з квізу";
   var emailI=el("input",{type:"email",id:"em",placeholder:"Твій email",autocomplete:"email","aria-label":"Email"});
   var nameI=el("input",{type:"text",id:"nm",placeholder:"Імʼя (необовʼязково)",autocomplete:"given-name","aria-label":"Імʼя"});
   var chk=el("input",{type:"checkbox",id:"cs"});
@@ -408,15 +408,15 @@ function result(){
     var body=new URLSearchParams();
     body.append(E.email,em);body.append(E.name,nameI.value.trim());body.append(E.result,txt);body.append(E.consent,CONSENT_TEXT);
     fetch(FORM_ACTION,{method:"POST",mode:"no-cors",body:body}).then(function(){
-      fstatus.textContent="Готово! Ти у списку очікування. Коли платформа буде готова, ми надішлемо лист на "+em+".";
+      fstatus.textContent="Готово! Ти у списку очікування. Коли відкрию запис на курс, напишу на "+em+".";
       joinBtn.textContent="Ти у списку";
     },function(){joinBtn.disabled=false;fstatus.textContent="Не вдалося надіслати. Перевір інтернет і спробуй ще раз."});
   });
   app.appendChild(el("div",{class:"dark"},[
     el("h3",{text:"Хочеш займатися цим всерйоз?"}),
-    el("p",{text:"Ми готуємо безкоштовну платформу, де цю професію можна вивчити з нуля. Залиш email у списку очікування, і коли платформа буде готова, ми надішлемо тобі лист."}),
+    el("p",{text:"Я готую курс про те, як стати AI-маркетинг-продюсером: з AI зробити роботу цілої маркетингової команди. Залиш email, і я напишу тобі першою, коли відкрию запис."}),
     emailI,nameI,chkL,joinBtn,fstatus,
-    el("p",{class:"small",text:"Email потрібен лише для листа про запуск платформи. Разом з ним ми збережемо твої відповіді з квізу, щоб підібрати для тебе правильний старт."})
+    el("p",{class:"small",text:"Email потрібен лише для листа про запуск курсу. Разом з ним ми збережемо твої відповіді з квізу, щоб підібрати для тебе правильний старт."})
   ]));
   app.appendChild(el("p",{class:"disc",text:"Це підказка напряму, а не гарантія роботи чи офера. Результат залежить від твоєї практики й портфоліо."}));
   app.appendChild(el("div",{class:"nav"},[el("button",{class:"btn ghost",type:"button",on:{click:function(){step=Q.length-1;render()}},text:"Змінити відповіді"}),
